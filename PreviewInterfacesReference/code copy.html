@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desktop Analytics Reports Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "slate-custom": "#64748b",
+                        "sidebar": "#0f172a"
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex">
+<aside class="w-64 bg-slate-900 text-white h-screen sticky top-0 flex-shrink-0 flex flex-col">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">analytics</span>
+</div>
+<h1 class="font-bold text-xl tracking-tight">MedSaaS</h1>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">analytics</span>
+<span class="font-medium">Reportes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-400" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-medium">Sedes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-400" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-medium">Pacientes</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-800">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors text-slate-400 mb-2" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">Configuración</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-3">
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDctl37jOIrnKadmegh7n9EprCsaGCNqaEZufeK75F-AoNokSuga4yJzWESWNPs1ePc6TWYhnP4sGwnnOen4UKaBzI-HIvB0GGJTjqXiNKBkxFxwHijYSxCXiMZR5Y22BrSdB06xIs6VSPG3SX1-_edBeclfLD65UAcOkzkCf4JzwUzti0nI4cyMveLH87kz57V2ZjsbuA4XiscF9az89kMPTFtBIhqxB_56qHOjRrLc0T7gS5PIioO7XPARZvorvCySSvo2_zYrA"/>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Dr. Julian Rossi</p>
+<p class="text-[10px] text-slate-500 uppercase">Administrador</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 flex items-center justify-between sticky top-0 z-20">
+<div>
+<h2 class="text-lg font-bold text-slate-800 dark:text-white">Panel de Análisis de Datos</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="bg-slate-100 dark:bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Buscar reportes..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 relative">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+</button>
+</div>
+</header>
+<main class="p-8 overflow-y-auto space-y-8">
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-4">
+<span class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+<span class="material-symbols-outlined text-primary text-2xl">calendar_today</span>
+</span>
+<span class="flex items-center text-emerald-600 text-sm font-bold bg-emerald-50 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                            12%
+                        </span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Visitas</p>
+<p class="text-3xl font-bold mt-1">1,284</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-4">
+<span class="p-3 bg-slate-50 dark:bg-slate-700 rounded-xl">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 text-2xl">domain</span>
+</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Conteo de Sedes</p>
+<p class="text-3xl font-bold mt-1">12</p>
+</div>
+<div class="bg-red-50 dark:bg-red-900/10 p-6 rounded-xl shadow-sm border border-red-100 dark:border-red-900/30">
+<div class="flex justify-between items-start mb-4">
+<span class="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl text-red-600">
+<span class="material-symbols-outlined text-2xl">warning</span>
+</span>
+</div>
+<p class="text-sm text-red-700/70 dark:text-red-400 font-medium">Riesgos Detectados</p>
+<p class="text-3xl font-bold mt-1 text-red-700 dark:text-red-400">42</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-4">
+<span class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-600">
+<span class="material-symbols-outlined text-2xl">biotech</span>
+</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Pruebas Impl.</p>
+<p class="text-3xl font-bold mt-1">315</p>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-bold text-lg text-slate-900 dark:text-white">Visitas por Sede</h3>
+<p class="text-sm text-slate-500">Volumen operativo últimos 30 días</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs border border-slate-200 rounded-lg hover:bg-slate-50">Mes</button>
+<button class="px-3 py-1 text-xs bg-primary text-white rounded-lg">Semana</button>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-6 px-4">
+<div class="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-[65%]">
+<div class="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">124</div>
+</div>
+<span class="text-xs text-slate-500 font-medium uppercase">Norte</span>
+</div>
+<div class="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-[85%]">
+<div class="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">182</div>
+</div>
+<span class="text-xs text-slate-500 font-medium uppercase">Sur</span>
+</div>
+<div class="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-[45%]">
+<div class="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">92</div>
+</div>
+<span class="text-xs text-slate-500 font-medium uppercase">Este</span>
+</div>
+<div class="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-[95%]">
+<div class="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">210</div>
+</div>
+<span class="text-xs text-slate-500 font-medium uppercase">Oeste</span>
+</div>
+<div class="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-[30%]">
+<div class="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">64</div>
+</div>
+<span class="text-xs text-slate-500 font-medium uppercase">Central</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="mb-8">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white">Distribución de Riesgos</h3>
+<p class="text-sm text-slate-500">Clasificación por niveles de severidad crítica</p>
+</div>
+<div class="flex items-center justify-around gap-12 py-4">
+<div class="relative w-48 h-48 shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+<circle class="stroke-slate-100 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="4"></circle>
+<circle class="stroke-red-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="25, 100" stroke-dashoffset="0" stroke-width="4"></circle>
+<circle class="stroke-amber-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="35, 100" stroke-dashoffset="-25" stroke-width="4"></circle>
+<circle class="stroke-emerald-500" cx="18" cy="18" fill="none" r="16" stroke-dasharray="40, 100" stroke-dashoffset="-60" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="text-3xl font-bold">42</span>
+<span class="text-xs text-slate-400 uppercase tracking-wider">Total</span>
+</div>
+</div>
+<div class="flex-1 max-w-xs space-y-6">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-4 h-4 rounded-full bg-red-500"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Alto Riesgo</span>
+</div>
+<div class="text-right">
+<span class="text-sm font-bold block">11 casos</span>
+<span class="text-[10px] text-slate-400">25%</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-4 h-4 rounded-full bg-amber-500"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Moderado</span>
+</div>
+<div class="text-right">
+<span class="text-sm font-bold block">15 casos</span>
+<span class="text-[10px] text-slate-400">35%</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-4 h-4 rounded-full bg-emerald-500"></span>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Controlado</span>
+</div>
+<div class="text-right">
+<span class="text-sm font-bold block">16 casos</span>
+<span class="text-[10px] text-slate-400">40%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+<h3 class="font-bold text-lg text-slate-900 dark:text-white">Análisis Recientes</h3>
+<button class="text-primary text-sm font-semibold hover:underline">Ver todo el historial</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-900/50">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Análisis</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Sede</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Estado</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Fecha y Hora</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">visibility</span>
+</div>
+<span class="font-semibold text-sm">Auditoría Trimestral</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Sede Norte</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Completado</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Hace 15 minutos</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-amber-600">warning</span>
+</div>
+<span class="font-semibold text-sm">Alerta de Riesgo Operativo</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Sede Sur</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full uppercase">En Revisión</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Hace 2 horas</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">open_in_new</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-indigo-600">biotech</span>
+</div>
+<span class="font-semibold text-sm">Pruebas Implementadas V2</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Sede Este</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Completado</span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">Hace 5 horas</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">open_in_new</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+
+</body></html>
