@@ -32,8 +32,7 @@ def separar_profesional_cargo(texto):
 
     texto_limpio = str(texto).strip()
     cargos = [
-        "Auxiliar de laboratorio", "Auxiliar de Laboratorio", 
-        "Bacteriólogo", "Bacteriologo", "Bacteriologo POCT",
+        "Auxiliar de laboratorio", "Auxiliar de Laboratorio", "Bacteriologa",
         "Enfermería", "Enfermeria", "Profesional Enfermería", 
         "Profesional Enfermeria", "Profesional"
     ]
