@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="m-2 rounded-2xl bg-blue-500 p-6 text-2xl text-white sm:bg-green-500 md:bg-fuchsia-600">Color de pantalla
+        header</div>
+
+    <div class="m-2 rounded-2xl bg-blue-500 p-3.5 text-2xl text-white">
+        <p class="block p-3 sm:hidden">Visible para pantallas pequeñas</p>
+        <p class="hidden p-3 sm:block md:hidden">Visible en pantallas medianas</p>
+        <p class="hidden p-3 md:block">Visible pantalla Grande</p>
+    </div>
+
+    <div
+        class="xs:gap-2 m-2 rounded-3xl border-0 bg-white p-4 text-black shadow-[-18px_26px_39px_6px_rgba(0,_0,_0,_0.3)] md:grid md:grid-cols-2">
+        <h1 class="text-4xl md:col-span-3 md:m-5">Titulo</h1>
+        <h2 class="m-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, harum? Dolores laudantium
+            ducimus facere quaerat eligendi veniam fuga similique accusantium, eum nesciunt harum, quos iusto minima
+            dicta error id fugit.</h2>
+        <div class="flex justify-center">
+            <img src="https://i.pinimg.com/1200x/fd/0f/9d/fd0f9d6db6e616aadba1a71d78b778fa.jpg" alt="imagen"
+                class="h-96" />
+        </div>
+    </div>
+    <div class="m-4 gap-1">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-4 row-span-3 flex justify-center bg-orange-400">01</div>
+            <div class="col-start-1 col-end-4 bg-orange-400">02</div>
+            <div class="col-start-1 col-end-5 bg-orange-400">03</div>
+            <div class="row-span-3 bg-orange-400">04</div>
+            <div class="bg-orange-400">05</div>
+            <div class="bg-orange-400">07</div>
+            <div class="bg-orange-400">08</div>
+            <div class="bg-orange-400">09</div>
+        </div>
+    </div>
+    <div class="m-4 gap-1 md:hidden">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="col-span-4 row-span-3 flex justify-center bg-orange-400">01</div>
+            <div class="col-start-1 col-end-4 bg-orange-400">02</div>
+            <div class="col-start-1 col-end-5 bg-orange-400">03</div>
+            <div class="row-span-3 bg-orange-400">04</div>
+            <div class="bg-orange-400">05</div>
+            <div class="bg-orange-400">07</div>
+            <div class="bg-orange-400">08</div>
+            <div class="bg-orange-400">09</div>
+        </div>
+    </div>
+    <div class="rounded-lg bg-white p-10 shadow-[-18px_26px_39px_6px_rgba(0,_0,_0,_0.3)]">aqui bloque</div>
+</body>
+
+</html>

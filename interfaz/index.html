@@ -37,6 +37,13 @@
                         Contactanos
                     </a>
                 </li>
+                <li class="list-none">
+                    <a href="#" class="transition">
+                        <button
+                            class="hover:bg-green-800 transition-all duration-300 active:scale-120 dark:bg-green-900 dark:text-white bg-green-600 text-white p-2 rounded-lg">Iniciar
+                            Sesión</button>
+                    </a>
+                </li>
             </div>
             <button id="open-menu" class="md:hidden active:scale-90 transition ">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
@@ -51,8 +58,17 @@
 
         <div id="mobile-navLinks"
             class="fixed inset-0 z-50 bg-white/60 text-slate-800 backdrop-blur flex flex-col items-center justify-center text-lg gap-8 md:hidden transition-transform duration-300 -translate-x-full">
+
             <li class="hover:text-green-400 list-none text-shadow-black text-black">
-                <a href="/" class="transition">
+                <a href="#" class="transition">
+                    <button
+                        class=" hover:bg-green-800 transition-all duration-300 active:scale-90 bg-green-600 text-white p-2 rounded-lg">Iniciar
+                        Sesión
+                    </button>
+                </a>
+            </li>
+            <li class="hover:text-green-400 list-none text-shadow-black text-black">
+                <a href="#" class="transition">
                     Home
                 </a>
             </li>
@@ -66,8 +82,6 @@
                     Contactanos
                 </a>
             </li>
-
-
             <button id="close-menu"
                 class="active:ring-3 active:ring-white aspect-square size-10 p-1 items-center justify-center bg-slate-100 hover:bg-slate-200 transition text-black rounded-md flex">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -80,17 +94,25 @@
         </div>
     </header>
 
-    <main class="bg-gray-200 dark:bg-gray-900 dark:text-white">
-        <section class="p-4 flex flex-col items-center justify-center">
-            <h1 class="text-4xl font-bold mt-2">Control de Estadistica Servicios</h1>
-            <p class="text-2xl mt-2">Carga tu data de informes, controla tus reportes y genera
-                tus
-                estadisticas </p>
+    <main class=" bg-gray-200 dark:bg-gray-900 dark:text-white">
+        <section class="p-4 items-center justify-center">
+            <div className="grid grid-cols-5 grid-rows-5 gap-4">
+                <div>
+                    <h1>Control de Estadistica Servicios</h1>
+                </div>
+                <div className="row-span-2">
+                    <p>Carga tu data de informes, controla tus reportes y genera tus estadisticas </p>
+                </div>
+            </div>
+
             <button
                 class="text-2xl bg-green-600 border-l-inherit hover:bg-green-800 transition-all duration-300 text-white p-2 rounded-lg mt-7 dark:bg-green-900 dark:text-white dark:hover:bg-green-300">
-                <a href="#">Contactanos</a></button>
-            <img src="./public/img/mainhero.png" alt=""
-                class="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300 mt-7">
+                <a href="#">Contactanos</a>
+            </button>
+            <div class="flex items-center justify-center">
+                <img src="./public/img/newImage1.png" alt="phone images and data"
+                    class="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300 mt-7">
+            </div>
         </section>
     </main>
 </body>
