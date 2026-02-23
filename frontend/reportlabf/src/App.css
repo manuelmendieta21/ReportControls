@@ -1,3 +1,15 @@
  .bg-blue-cyan {
    background-color: rgb(15, 170, 205);
  }
+
+ .bg-blue-mayus {
+   background-color: rgb(15, 107, 205);
+ }
+
+ .text-blue-cyan {
+   color: rgb(15, 170, 205);
+ }
+
+ .text-blue-mayus {
+   color: rgb(8, 89, 176);
+ }

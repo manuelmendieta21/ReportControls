@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,19 +10,21 @@ export function Header() {
 
     return (
         <>
-            <header className="text-black p-4 dark:text-gray-300 relative">
+            <header className="p-4 text-gray-300 relative">
                 <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-32 backdrop-blur text-slate-800 text-sm">
-                    <img
-                        src="./public/img/DataLabLogo.png"
-                        alt="Logo DataLab"
-                        className="w-45 dark:bg-white"
-                    />
+                    <Link to="/">
+                        <img
+                            src="./public/img/DataLabLogo.png"
+                            alt="Logo DataLab"
+                            className="w-45 dark:bg-white"
+                        />
+                    </Link>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex flex-row items-center gap-8 justify-end">
                         <ul className="flex flex-row gap-8 items-center m-0 p-0">
                             <li className="hover:text-green-400 list-none text-black">
-                                <a href="#" className="transition">Home</a>
+                                <Link to="/" className="transition">Home</Link>
                             </li>
                             <li className="hover:text-green-400 list-none text-black">
                                 <a href="#" className="transition">About</a>
@@ -30,11 +33,11 @@ export function Header() {
                                 <a href="#" className="transition">Contactanos</a>
                             </li>
                             <li className="list-none">
-                                <a href="#" className="transition">
+                                <Link to="/login" className="transition">
                                     <button className="hover:bg-blue-800 transition-all duration-300 active:scale-110 dark:bg-blue-400 dark:text-white bg-blue-500 text-white p-2 rounded-lg">
                                         Iniciar Sesión
                                     </button>
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -74,7 +77,7 @@ export function Header() {
                         </div>
                         <ul className="flex flex-col gap-6 m-0 p-0 text-black ">
                             <li className="list-none text-lg">
-                                <a href="#" onClick={toggleMenu} className="">Home</a>
+                                <Link to="/" onClick={toggleMenu} className="">Home</Link>
                             </li>
                             <li className="list-none text-lg">
                                 <a href="#" onClick={toggleMenu} className="">About</a>
@@ -83,9 +86,11 @@ export function Header() {
                                 <a href="#" onClick={toggleMenu} className="">Contactanos</a>
                             </li>
                             <li className="list-none">
-                                <button className="dark:bg-blue-400 bg-blue-500 text-white text-lg w-full  dark:text-white text-black p-3 rounded-lg hover:bg-green-700 transition">
-                                    Iniciar Sesión
-                                </button>
+                                <Link to="/login" onClick={toggleMenu} className="block w-full">
+                                    <button className="dark:bg-blue-400 bg-blue-500 text-lg w-full  dark:text-white text-black p-3 rounded-lg hover:bg-green-700 transition">
+                                        Iniciar Sesión
+                                    </button>
+                                </Link>
                             </li>
                         </ul>
                     </div>
