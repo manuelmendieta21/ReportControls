@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Sesion } from "./Sesion";
 
 export function Dashboard() {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(true);
     const navigate = useNavigate();
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
-    const handleLogout = () => {
-        // En una app real, aquí se limpiaría el token/sesión
-        console.log("Cerrando sesión...");
-        navigate("/");
-    };
+
 
     return (
         <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex relative">
@@ -38,7 +35,7 @@ export function Dashboard() {
                             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                                 <span className="material-symbols-outlined text-white text-xl">analytics</span>
                             </div>
-                            <h1 className="font-bold text-xl tracking-tight">MedSaaS</h1>
+                            <h1 className="font-bold text-xl tracking-tight">DataLab</h1>
                         </div>
                         {/* Close Button Mobile */}
                         <button className="lg:hidden p-1 hover:bg-slate-800 rounded-lg" onClick={toggleMobileMenu}>
@@ -66,23 +63,7 @@ export function Dashboard() {
                     </nav>
                 </div>
 
-                <div className="mt-auto p-6 border-t border-slate-800">
-                    <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 transition-colors mb-2"
-                    >
-                        <span className="material-symbols-outlined">logout</span>
-                        <span className="font-medium">Cerrar Sesión</span>
-                    </button>
-
-                    <div className="flex items-center gap-3 px-4 py-3 pt-4 border-t border-slate-800/50">
-                        <img alt="Profile" className="w-10 h-10 rounded-full object-cover border border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDctl37jOIrnKadmegh7n9EprCsaGCNqaEZufeK75F-AoNokSuga4yJzWESWNPs1ePc6TWYhnP4sGwnnOen4UKaBzI-HIvB0GGJTjqXiNKBkxFxwHijYSxCXiMZR5Y22BrSdB06xIs6VSPG3SX1-_edBeclfLD65UAcOkzkCf4JzwUzti0nI4cyMveLH87kz57V2ZjsbuA4XiscF9az89kMPTFtBIhqxB_56qHOjRrLc0T7gS5PIioO7XPARZvorvCySSvo2_zYrA" />
-                        <div className="overflow-hidden">
-                            <p className="text-[12px] font-semibold truncate">Monica Montenegro</p>
-                            <p className="text-[10px] text-slate-500 uppercase">Administrador</p>
-                        </div>
-                    </div>
-                </div>
+                <Sesion />
             </aside>
 
             {/* Main Content */}
@@ -174,11 +155,11 @@ export function Dashboard() {
                             </div>
                             <div className="h-64 flex items-end justify-between gap-3 md:gap-6 px-2 md:px-4">
                                 {[
-                                    { label: "Norte", height: "65%", val: 124 },
-                                    { label: "Sur", height: "85%", val: 182 },
-                                    { label: "Este", height: "45%", val: 92 },
-                                    { label: "Oeste", height: "95%", val: 210 },
-                                    { label: "Central", height: "30%", val: 64 },
+                                    { label: "Norte", height: "65%", val: 65 },
+                                    { label: "Sur", height: "85%", val: 85 },
+                                    { label: "Este", height: "45%", val: 45 },
+                                    { label: "Oeste", height: "95%", val: 95 },
+                                    { label: "Central", height: "30%", val: 30 },
                                 ].map((item, i) => (
                                     <div key={i} className="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
                                         <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative transition-all" style={{ height: item.height }}>

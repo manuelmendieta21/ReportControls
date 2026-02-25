@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { DataLabLogo } from "./DataLabLogo";
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,11 +14,7 @@ export function Header() {
             <header className="p-4 text-gray-300 relative">
                 <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-32 backdrop-blur text-slate-800 text-sm">
                     <Link to="/">
-                        <img
-                            src="./public/img/DataLabLogo.png"
-                            alt="Logo DataLab"
-                            className="w-45 dark:bg-white"
-                        />
+                        <DataLabLogo />
                     </Link>
 
                     {/* Desktop Menu */}
@@ -43,7 +40,7 @@ export function Header() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden active:scale-110 transition-all duration-300">
+                    <div className="md:hidden active:scale-110 transition-all duration-300 z-50">
                         <button onClick={toggleMenu} id="openMenu">
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -59,15 +56,11 @@ export function Header() {
                 {/* Mobile Navigation Links */}
                 <div
                     id="mobileNavLinks"
-                    className={`fixed top-0 left-0 w-full h-full bg-white transition-transform duration-300 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} md:hidden`}
+                    className={`fixed top-0 left-0 w-full h-full bg-white z-[100] transition-transform duration-300 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} md:hidden`}
                 >
                     <div className="flex flex-col p-8 gap-6 h-full">
                         <div className="flex justify-between items-center mb-4">
-                            <img
-                                src="./public/img/DataLabLogo.png"
-                                alt="Logo DataLab"
-                                className="w-32"
-                            />
+                            <DataLabLogo />
                             <button id="closeMenu" onClick={toggleMenu}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 6 6 18" className="text-black" />

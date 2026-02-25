@@ -5,13 +5,16 @@ import { Menu } from '../components/menu.jsx'
 import { Footer } from '../components/footer.jsx'
 import { Login } from '../components/Login.jsx'
 import { Dashboard } from '../components/Dashboard.jsx'
+import { ProtectedRoute } from '../components/ProtectedRoute.jsx'
 
 // Componente para manejar la visibilidad del Header y Footer
 function AppContent() {
   const location = useLocation();
+  const isLoggedIn = !!localStorage.getItem("user");
 
-  // Definimos en qué rutas NO queremos que se vea el Header/Footer
-  const hideLayout = location.pathname === '/dashboard';
+  // Ocultamos Header/Footer si estamos en /dashboard O si el usuario está logueado (sesión activa)
+  // Esto asegura que dentro de la app no se vea el sitio público si ya inició sesión
+  const hideLayout = location.pathname === '/dashboard' || (isLoggedIn && location.pathname !== '/');
 
   return (
     <>
@@ -19,7 +22,14 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Menu />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {!hideLayout && <Footer />}
     </>
