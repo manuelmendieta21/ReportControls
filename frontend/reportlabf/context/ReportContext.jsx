@@ -3,20 +3,22 @@ import { createContext, useContext, useState } from "react";
 const ReportContext = createContext();
 
 export function ReportProvider({ children }) {
-    const [file, setFile] = useState(null);
-    const [result, setResult] = useState(null);
+    const [files, setFiles] = useState([]);
+    const [results, setResults] = useState([]);
+    const [uploadMode, setUploadMode] = useState('individual'); // 'individual' or 'batch'
     const [error, setError] = useState(null);
 
     const clearState = () => {
-        setFile(null);
-        setResult(null);
+        setFiles([]);
+        setResults([]);
         setError(null);
     };
 
     return (
         <ReportContext.Provider value={{
-            file, setFile,
-            result, setResult,
+            files, setFiles,
+            results, setResults,
+            uploadMode, setUploadMode,
             error, setError,
             clearState
         }}>

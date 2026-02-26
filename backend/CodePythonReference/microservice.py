@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 import pandas as pd
 from io import BytesIO
 import uvicorn
@@ -115,6 +116,32 @@ async def process_excel(file: UploadFile = File(...)):
     except Exception as e:
         if isinstance(e, HTTPException): raise e
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/process-batch")
+async def process_batch(files: List[UploadFile] = File(...)):
+    """Endpoint to process multiple files simultaneously."""
+    results = []
+    errors = []
+    
+    for file in files:
+        filename = file.filename.lower()
+        if not (filename.endswith('.xlsx') or filename.endswith('.csv')):
+            errors.append({"file": file.filename, "error": "Invalid file type."})
+            continue
+            
+        try:
+            content = await file.read()
+            data = extract_data(content, file.filename)
+            results.append(data)
+        except Exception as e:
+            errors.append({"file": file.filename, "error": str(e)})
+            
+    return JSONResponse(content={
+        "processed_count": len(results),
+        "total_count": len(files),
+        "results": results,
+        "errors": errors
+    })
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
