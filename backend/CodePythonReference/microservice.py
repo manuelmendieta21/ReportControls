@@ -1,11 +1,21 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from io import BytesIO
 import uvicorn
 import os
 
 app = FastAPI(title="Excel Processor Microservice")
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to specific origins in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def limpiar_dato(valor):
     """Limpia y normaliza datos, maneja fechas correctamente."""

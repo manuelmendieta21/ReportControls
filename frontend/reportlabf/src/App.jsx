@@ -5,7 +5,9 @@ import { Menu } from '../components/menu.jsx'
 import { Footer } from '../components/footer.jsx'
 import { Login } from '../components/Login.jsx'
 import { Dashboard } from '../components/Dashboard.jsx'
+import { ReportProcessor } from '../components/ReportProcessor.jsx'
 import { ProtectedRoute } from '../components/ProtectedRoute.jsx'
+import { ReportProvider } from '../context/ReportContext.jsx'
 
 // Componente para manejar la visibilidad del Header y Footer
 function AppContent() {
@@ -30,6 +32,14 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <ReportProcessor />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {!hideLayout && <Footer />}
     </>
@@ -38,9 +48,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ReportProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ReportProvider>
   )
 }
 
