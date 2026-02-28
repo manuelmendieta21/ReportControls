@@ -95,6 +95,7 @@ def extract_data(file_bytes: bytes, filename: str):
 async def health_check():
     return {"status": "ok"}
 
+
 @app.post("/api/process-excel")
 async def process_excel(file: UploadFile = File(...)):
     filename = file.filename.lower()
