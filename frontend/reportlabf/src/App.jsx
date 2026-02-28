@@ -3,16 +3,23 @@ import './App.css'
 import { Header } from '../components/header.jsx'
 import { Menu } from '../components/menu.jsx'
 import { Footer } from '../components/footer.jsx'
+import { Home } from '../components/Home.jsx'
 import { Login } from '../components/Login.jsx'
 import { Dashboard } from '../components/Dashboard.jsx'
 import { ReportProcessor } from '../components/ReportProcessor.jsx'
 import { ProtectedRoute } from '../components/ProtectedRoute.jsx'
 import { ReportProvider } from '../context/ReportContext.jsx'
+import { useEffect } from 'react'
 
 // Componente para manejar la visibilidad del Header y Footer
 function AppContent() {
   const location = useLocation();
   const isLoggedIn = !!localStorage.getItem("user");
+
+  // Activar smooth scroll global
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+  }, []);
 
   // Ocultamos Header/Footer si estamos en /dashboard O si el usuario está logueado (sesión activa)
   // Esto asegura que dentro de la app no se vea el sitio público si ya inició sesión
@@ -22,7 +29,7 @@ function AppContent() {
     <>
       {!hideLayout && <Header />}
       <Routes>
-        <Route path="/" element={<Menu />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"

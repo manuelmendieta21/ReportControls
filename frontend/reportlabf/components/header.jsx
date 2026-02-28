@@ -24,11 +24,11 @@ export function Header() {
                             <li className="hover:text-green-400 list-none text-black">
                                 <Link to="/" className="transition">Home</Link>
                             </li>
-                            <li className="hover:text-green-400 list-none text-black">
-                                <a href="#" className="transition">About</a>
+                            <li className="hover:text-primary list-none text-slate-600 dark:text-slate-300">
+                                <a href="#about" className="transition font-medium">Nosotros</a>
                             </li>
-                            <li className="hover:text-green-400 list-none text-black">
-                                <a href="#" className="transition">Contactanos</a>
+                            <li className="hover:text-primary list-none text-slate-600 dark:text-slate-300">
+                                <a href="#contact" className="transition font-medium">Contactanos</a>
                             </li>
                             <li className="list-none">
                                 <Link to="/login" className="transition">
@@ -74,10 +74,10 @@ export function Header() {
                                 <Link to="/" onClick={toggleMenu} className="">Home</Link>
                             </li>
                             <li className="list-none text-lg">
-                                <a href="#" onClick={toggleMenu} className="">About</a>
+                                <a href="#about" onClick={toggleMenu} className="font-medium text-slate-700">Nosotros</a>
                             </li>
                             <li className="list-none text-lg">
-                                <a href="#" onClick={toggleMenu} className="">Contactanos</a>
+                                <a href="#contact" onClick={toggleMenu} className="font-medium text-slate-700">Contactanos</a>
                             </li>
                             <li className="list-none">
                                 <Link to="/login" onClick={toggleMenu} className="block w-full">

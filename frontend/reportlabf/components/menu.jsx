@@ -24,8 +24,8 @@ export function Menu() {
                     </div>
                     <div className="flex justify-center md:justify-start">
                         <a
-                            href="#"
-                            className="inline-block text-xl dark:bg-blue-mayus bg-blue-600 hover:bg-blue-700 hover:scale-105 transition-all duration-300 text-white px-6 py-3 rounded-lg font-semibold dark:bg-blue-500 dark:hover:bg-blue-400"
+                            href="#contact"
+                            className="inline-block text-xl dark:bg-blue-mayus bg-blue-600 hover:bg-blue-700 hover:scale-105 transition-all duration-300 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20"
                         >
                             Contactanos
                         </a>
