@@ -50,6 +50,8 @@ export function ReportProcessor() {
 
     const onFileChange = (e) => {
         handleFiles(e.target.files);
+        // Limpiamos el valor del input para permitir subir el mismo archivo nuevamente
+        e.target.value = '';
     };
 
     const removeFile = (index) => {
@@ -68,7 +70,7 @@ export function ReportProcessor() {
         if (uploadMode === 'individual') {
             formData.append("file", files[0]);
             try {
-                const response = await fetch("http://localhost:8000/process-excel", {
+                const response = await fetch("/api/process-excel", {
                     method: "POST",
                     body: formData,
                 });
@@ -83,7 +85,7 @@ export function ReportProcessor() {
         } else {
             files.forEach(file => formData.append("files", file));
             try {
-                const response = await fetch("http://localhost:8000/process-batch", {
+                const response = await fetch("/api/process-batch", {
                     method: "POST",
                     body: formData,
                 });
@@ -117,7 +119,7 @@ export function ReportProcessor() {
                             onClick={() => { setUploadMode('batch'); clearState(); }}
                             className={`px-6 py-2 rounded-lg font-medium transition-all ${uploadMode === 'batch' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-500 hover:text-slate-700"}`}
                         >
-                            Masivo (Batch)
+                            Carga Multiple
                         </button>
                     </div>
                 </div>
@@ -159,7 +161,7 @@ export function ReportProcessor() {
                             />
                             <button className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-primary/25 transition-all flex items-center gap-2 pointer-events-none">
                                 <span className="material-symbols-outlined text-sm">add</span>
-                                Browse Files
+                                {uploadMode === 'individual' ? "Cargar archivo" : "Cargar archivos"}
                             </button>
                         </div>
                     </div>
@@ -197,21 +199,24 @@ export function ReportProcessor() {
 
                 {/* Actions */}
                 <div className="flex justify-end gap-3">
+                    {/* Boton para limpiar todo */}
                     <button
                         disabled={files.length === 0 || isProcessing}
-                        className="px-6 py-2 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition disabled:opacity-50"
                         onClick={clearState}
+                        className={`px-8 py-3 rounded-xl font-bold text-white transition flex items-center gap-2 shadow-lg
+                            ${(files.length === 0 || isProcessing) ? "hidden" : "bg-red-300 hover:bg-red-300/90 shadow-red-300/20 cursor-pointer hover:scale-105"}
+                        `}
                     >
-                        Limpiar Todo
+                        Limpiar
                     </button>
+                    {/* Boton para procesar archivos */}
                     <button
                         disabled={files.length === 0 || isProcessing}
                         onClick={processFiles}
-                        className={`
-                            px-8 py-3 rounded-xl font-bold text-white transition flex items-center gap-2 shadow-lg
-                            ${isProcessing ? "bg-slate-400 cursor-not-allowed" : "bg-primary hover:bg-primary/90 shadow-primary/20"}
-                            disabled:opacity-50
-                        `}
+                        className={`px-8 py-3 rounded-xl font-bold text-white transition flex items-center gap-2 shadow-lg
+                            ${(files.length === 0 || isProcessing) ? "hidden cursor-not-allowed" : "bg-primary hover:bg-primary/90 shadow-primary/20 cursor-pointer hover:scale-105"}
+                            disabled:opacity-50`
+                        }
                     >
                         {isProcessing ? (
                             <>
@@ -232,10 +237,7 @@ export function ReportProcessor() {
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-2xl font-bold dark:text-white">Resultados del Procesamiento</h3>
-                            <button className="text-primary hover:underline text-sm font-medium flex items-center gap-1">
-                                <span className="material-symbols-outlined text-lg">download</span>
-                                Exportar Todo
-                            </button>
+
                         </div>
 
                         {uploadMode === 'individual' ? (
@@ -256,19 +258,25 @@ export function ReportProcessor() {
                                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                                             {results.map((res, idx) => (
                                                 <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                                                    <td className="px-6 py-4 font-medium dark:text-white max-w-[200px] truncate">{res.ARCHIVO}</td>
-                                                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{res.Sede}</td>
-                                                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{res.Fecha}</td>
-                                                    <td className="px-6 py-4 font-bold text-primary">{res["CALIFICACIÓN OBTENIDA"]}</td>
+                                                    <td className="px-6 py-4 font-medium dark:text-white max-w-[240px] text-sm truncate">{res.ARCHIVO}</td>
+                                                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{res.Sede}</td>
+                                                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{res.Fecha}</td>
+                                                    <td className="px-6 py-4 font-bold text-sm text-primary">{res["CALIFICACIÓN OBTENIDA"]}</td>
                                                     <td className="px-6 py-4 text-center">
-                                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${res["CLASIFICACIÓN POR RIESGO"].toLowerCase().includes('bajo') ? 'bg-emerald-100 text-emerald-600' :
-                                                                res["CLASIFICACIÓN POR RIESGO"].toLowerCase().includes('alto') ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'
+                                                        <span className={`px-2 py-1 rounded-full text-[8px] font-bold uppercase ${res["CLASIFICACIÓN POR RIESGO"].toLowerCase().includes('bajo') ? 'bg-emerald-100 text-emerald-600' :
+                                                            res["CLASIFICACIÓN POR RIESGO"].toLowerCase().includes('alto') ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'
                                                             }`}>
                                                             {res["CLASIFICACIÓN POR RIESGO"]}
                                                         </span>
                                                     </td>
                                                 </tr>
                                             ))}
+                                            <td className="px-6 py-4 text-center">
+                                                <button className="bg-primary hover:bg-primary/90 hover:scale-105 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-lg ">cloud_upload</span>
+                                                    Cargar datos
+                                                </button>
+                                            </td>
                                         </tbody>
                                     </table>
                                 </div>
@@ -327,6 +335,13 @@ function ResultCard({ result }) {
                         </span>
                     ))}
                 </div>
+
+            </div>
+            <div className="flex items-center justify-center p-4">
+                <button className="bg-green-600 hover:bg-green-700  cursor-pointer hover:scale-105  text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                    <span className="material-symbols-outlined text-lg">cloud_upload</span>
+                    Cargar datos
+                </button>
             </div>
         </div>
     );
