@@ -1,9 +1,9 @@
 export function DataLabLogo() {
     return (
         <img
-            src="/img/DataLabLogo.png"
+            src="/img/logoresolutionRM.png"
             alt="Logo DataLab"
-            className="w-45 dark:bg-white"
+            className="w-21 h-18 "
         />
     );
 }
