@@ -188,15 +188,49 @@ async def upload_results(payload: UploadResultsPayload):
 
     try:
         table_name = os.getenv("SUPABASE_REPORTS_TABLE", "reportes_procesados")
-        rows = [map_result_to_db_row(item) for item in payload.results]
         client = get_supabase_client()
-        response = client.table(table_name).insert(rows).execute()
-        inserted = len(response.data) if response.data else 0
+        
+        # 1. Obtener nombres de archivos en el payload
+        filenames_in_payload = [item.get("ARCHIVO") for item in payload.results if item.get("ARCHIVO")]
+        
+        if not filenames_in_payload:
+            # Si no hay nombres de archivos, procedemos normal (aunque no debería pasar)
+            rows = [map_result_to_db_row(item) for item in payload.results]
+            response = client.table(table_name).insert(rows).execute()
+            return JSONResponse(content={"ok": True, "inserted": len(response.data)})
+
+        # 2. Consultar cuáles de estos archivos YA existen en la DB
+        existing_response = client.table(table_name).select("archivo").in_("archivo", filenames_in_payload).execute()
+        existing_filenames = {row["archivo"] for row in existing_response.data} if existing_response.data else set()
+
+        # 3. Filtrar los que NO están en la DB
+        rows_to_insert = [
+            map_result_to_db_row(item) 
+            for item in payload.results 
+            if item.get("ARCHIVO") not in existing_filenames
+        ]
+
+        if not rows_to_insert:
+            # Todos son duplicados
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "ok": False,
+                    "message": "Todos los archivos ya han sido cargados anteriormente.",
+                    "skipped": len(payload.results)
+                }
+            )
+
+        # 4. Insertar solo los nuevos
+        response = client.table(table_name).insert(rows_to_insert).execute()
+        inserted_count = len(response.data) if response.data else 0
+        skipped_count = len(payload.results) - inserted_count
 
         return JSONResponse(content={
             "ok": True,
-            "inserted": inserted,
-            "table": table_name
+            "inserted": inserted_count,
+            "skipped": skipped_count,
+            "message": f"Se cargaron {inserted_count} nuevos registros." + (f" Se omitieron {skipped_count} por ser duplicados." if skipped_count > 0 else "")
         })
     except HTTPException as exc:
         raise exc
@@ -217,11 +251,20 @@ async def get_reports(limit: int = 50):
 
 
 @app.get("/api/stats")
-async def get_stats():
+async def get_stats(start_date: Optional[str] = None, end_date: Optional[str] = None):
     try:
         table_name = os.getenv("SUPABASE_REPORTS_TABLE", "reportes_procesados")
         client = get_supabase_client()
-        response = client.table(table_name).select("*").execute()
+        
+        query = client.table(table_name).select("*")
+        
+        # Filtrar por fecha si se proporcionan
+        if start_date:
+            query = query.gte("fecha", start_date)
+        if end_date:
+            query = query.lte("fecha", end_date)
+            
+        response = query.order("fecha", desc=True).execute()
         data = response.data
 
         if not data:
@@ -229,16 +272,19 @@ async def get_stats():
                 "total_visits": 0,
                 "sedes_count": 0,
                 "risks_detected": 0,
-                "risks_distribution": {"alto": 0, "moderado": 0, "bajo": 0}
+                "visits_this_month": 0,
+                "risks_distribution": {"alto": 0, "moderado": 0, "bajo": 0},
+                "visits_by_personnel": [],
+                "recent_reports": []
             })
 
         df = pd.DataFrame(data)
         
-        # Simple stats
+        # Estadísticas básicas
         total_visits = len(df)
         sedes_count = df['sede'].nunique() if 'sede' in df.columns else 0
         
-        # Risk distribution
+        # Distribución de riesgos
         risks_dist = {"alto": 0, "moderado": 0, "bajo": 0}
         if 'clasificacion_riesgo' in df.columns:
             for risk in df['clasificacion_riesgo']:
@@ -249,12 +295,32 @@ async def get_stats():
         
         risks_detected = risks_dist["alto"] + risks_dist["moderado"]
 
+        # Visitas este mes
+        from datetime import datetime
+        now = datetime.now()
+        current_month_str = now.strftime('%Y-%m')
+        
+        visits_this_month = 0
+        if 'fecha' in df.columns:
+            visits_this_month = len(df[df['fecha'].str.startswith(current_month_str)])
+
+        # Visitas por responsable
+        personnel_stats = []
+        if 'nombre_responsable_visita' in df.columns:
+            personnel_counts = df['nombre_responsable_visita'].value_counts()
+            personnel_stats = [
+                {"nombre": name, "cantidad": int(count)} 
+                for name, count in personnel_counts.items()
+            ]
+
         return JSONResponse(content={
             "total_visits": total_visits,
             "sedes_count": sedes_count,
             "risks_detected": risks_detected,
+            "visits_this_month": visits_this_month,
             "risks_distribution": risks_dist,
-            "recent_reports": data[:5] # Last 5 for table
+            "visits_by_personnel": personnel_stats[:10], # Top 10 responsables
+            "recent_reports": data[:10] # Últimos 10 registros
         })
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo estadísticas: {str(e)}")

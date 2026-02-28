@@ -6,29 +6,41 @@ export function Dashboard() {
         total_visits: 0,
         sedes_count: 0,
         risks_detected: 0,
+        visits_this_month: 0,
         risks_distribution: { alto: 0, moderado: 0, bajo: 0 },
+        visits_by_personnel: [],
         recent_reports: []
+    });
+    const [dates, setDates] = useState({
+        start: "",
+        end: ""
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        async function fetchStats() {
-            try {
-                const response = await fetch("/api/stats");
-                if (!response.ok) throw new Error("Error al cargar estadísticas");
-                const data = await response.json();
-                setStats(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchStats();
-    }, []);
+    async function fetchStats() {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (dates.start) params.append("start_date", dates.start);
+            if (dates.end) params.append("end_date", dates.end);
 
-    if (loading) return (
+            const response = await fetch(`/api/stats?${params.toString()}`);
+            if (!response.ok) throw new Error("Error al cargar estadísticas");
+            const data = await response.json();
+            setStats(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchStats();
+    }, [dates]);
+
+    if (loading && stats.total_visits === 0) return (
         <DashboardLayout title="Cargando...">
             <div className="flex items-center justify-center h-64">
                 <span className="animate-spin material-symbols-outlined text-4xl text-primary">progress_activity</span>
@@ -39,6 +51,37 @@ export function Dashboard() {
     return (
         <DashboardLayout title="Panel de Control">
             <div className="space-y-8">
+                {/* Filters Row */}
+                <section className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-slate-400 text-sm">calendar_month</span>
+                        <span className="text-xs font-bold text-slate-500 uppercase">Filtrar por Fecha:</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="date"
+                            value={dates.start}
+                            onChange={(e) => setDates(prev => ({ ...prev, start: e.target.value }))}
+                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-primary transition-all dark:text-white"
+                        />
+                        <span className="text-slate-400">al</span>
+                        <input
+                            type="date"
+                            value={dates.end}
+                            onChange={(e) => setDates(prev => ({ ...prev, end: e.target.value }))}
+                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-primary transition-all dark:text-white"
+                        />
+                        {(dates.start || dates.end) && (
+                            <button
+                                onClick={() => setDates({ start: "", end: "" })}
+                                className="text-xs text-red-500 font-bold hover:underline ml-2"
+                            >
+                                Limpiar
+                            </button>
+                        )}
+                    </div>
+                </section>
+
                 {/* Stats Grid */}
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
@@ -47,18 +90,18 @@ export function Dashboard() {
                                 <span className="material-symbols-outlined text-primary text-2xl">calendar_today</span>
                             </span>
                         </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Visitas</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Visitas (Periodo)</p>
                         <p className="text-3xl font-bold mt-1">{stats.total_visits}</p>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-xl shadow-sm border border-emerald-100 dark:border-emerald-900/30">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="p-3 bg-slate-50 dark:bg-slate-700 rounded-xl">
-                                <span className="material-symbols-outlined text-slate-600 dark:text-slate-300 text-2xl">domain</span>
+                            <span className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600">
+                                <span className="material-symbols-outlined text-2xl">event_upcoming</span>
                             </span>
                         </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Conteo de Sedes</p>
-                        <p className="text-3xl font-bold mt-1">{stats.sedes_count}</p>
+                        <p className="text-sm text-emerald-700/70 dark:text-emerald-400 font-medium">Visitas del Mes</p>
+                        <p className="text-3xl font-bold mt-1 text-emerald-700 dark:text-emerald-400">{stats.visits_this_month}</p>
                     </div>
 
                     <div className="bg-red-50 dark:bg-red-900/10 p-6 rounded-xl shadow-sm border border-red-100 dark:border-red-900/30">
@@ -74,40 +117,38 @@ export function Dashboard() {
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
                         <div className="flex justify-between items-start mb-4">
                             <span className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-600">
-                                <span className="material-symbols-outlined text-2xl">biotech</span>
+                                <span className="material-symbols-outlined text-2xl">domain</span>
                             </span>
                         </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Reportes Guardados</p>
-                        <p className="text-3xl font-bold mt-1">{stats.total_visits}</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Sedes Visitadas</p>
+                        <p className="text-3xl font-bold mt-1">{stats.sedes_count}</p>
                     </div>
                 </section>
 
-                {/* Charts Section */}
+                {/* Charts & Personnel Section */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Bar Chart Mockup (Still using distribution for now or stays mockup) */}
-                    <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col">
+                    {/* Personnel Visitas List */}
+                    <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Visitas por Sede</h3>
-                                <p className="text-sm text-slate-500">Volumen operativo por sede</p>
+                                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Visitas por Responsable</h3>
+                                <p className="text-sm text-slate-500">Cantidad según quienes realizan la visita</p>
                             </div>
                         </div>
-                        <div className="h-64 flex items-end justify-between gap-3 md:gap-6 px-2 md:px-4">
-                            {/* Real data for this would require another aggregation, keep as representation for now */}
-                            {[
-                                { label: "Norte", height: "65%", val: 65 },
-                                { label: "Sur", height: "85%", val: 85 },
-                                { label: "Este", height: "45%", val: 45 },
-                                { label: "Oeste", height: "95%", val: 95 },
-                                { label: "Central", height: "30%", val: 30 },
-                            ].map((item, i) => (
-                                <div key={i} className="flex flex-col items-center gap-3 flex-1 group h-full justify-end">
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative transition-all" style={{ height: item.height }}>
-                                        <div className="absolute bottom-0 left-0 right-0 bg-primary/40 rounded-t-lg group-hover:bg-primary transition-all cursor-pointer h-full"></div>
+                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {stats.visits_by_personnel.length > 0 ? stats.visits_by_personnel.map((item, i) => (
+                                <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                                            {item.nombre.charAt(0)}
+                                        </div>
+                                        <span className="text-sm font-semibold dark:text-white">{item.nombre}</span>
                                     </div>
-                                    <span className="text-[10px] md:text-xs text-slate-500 font-medium uppercase truncate w-full text-center">{item.label}</span>
+                                    <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-lg">{item.cantidad} visitas</span>
                                 </div>
-                            ))}
+                            )) : (
+                                <p className="text-center text-slate-400 py-10">No hay datos de responsables.</p>
+                            )}
                         </div>
                     </div>
 
@@ -165,6 +206,9 @@ export function Dashboard() {
                 <section className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
                     <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                         <h3 className="font-bold text-lg text-slate-900 dark:text-white">Análisis Recientes</h3>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-400 font-medium uppercase tracking-tighter">Mostrando últimos registros</span>
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left min-w-[600px]">
@@ -172,9 +216,9 @@ export function Dashboard() {
                                 <tr className="bg-slate-50 dark:bg-slate-900/50">
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Archivo</th>
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Sede</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Estado</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">Riesgo</th>
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Calificación</th>
-                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Fecha</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -188,20 +232,20 @@ export function Dashboard() {
                                                 <span className="font-semibold text-sm truncate max-w-[150px]">{row.archivo}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm">{row.sede}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 ${row.clasificacion_riesgo.toLowerCase().includes('bajo') ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'} text-[10px] font-bold rounded-full uppercase truncate inline-block`}>
+                                        <td className="px-6 py-4 text-sm font-medium">{row.sede}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className={`px-2 py-1 ${row.clasificacion_riesgo.toLowerCase().includes('bajo') ? 'bg-emerald-100 text-emerald-700' :
+                                                row.clasificacion_riesgo.toLowerCase().includes('alto') ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                                                } text-[10px] font-bold rounded-full uppercase truncate inline-block`}>
                                                 {row.clasificacion_riesgo}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">{row.calificacion_obtenida}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button className="material-symbols-outlined text-slate-400 hover:text-primary transition-colors">open_in_new</button>
-                                        </td>
+                                        <td className="px-6 py-4 text-sm font-bold text-primary">{row.calificacion_obtenida}</td>
+                                        <td className="px-6 py-4 text-right text-sm text-slate-500 whitespace-nowrap">{row.fecha}</td>
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan="5" className="px-6 py-10 text-center text-slate-500">No hay reportes procesados aún.</td>
+                                        <td colSpan="5" className="px-6 py-10 text-center text-slate-500">No hay reportes procesados aún en este rango.</td>
                                     </tr>
                                 )}
                             </tbody>
