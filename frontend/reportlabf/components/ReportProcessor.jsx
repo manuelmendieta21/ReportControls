@@ -1,20 +1,20 @@
 import { useState, useCallback } from "react";
 import { DashboardLayout } from "./DashboardLayout";
 import { useReport } from "../context/ReportContext";
+import { toast } from "react-hot-toast";
 
 export function ReportProcessor() {
     const {
         files, setFiles,
         results, setResults,
         uploadMode, setUploadMode,
-        error, setError,
         clearState
     } = useReport();
 
     const [isDragging, setIsDragging] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadMessage, setUploadMessage] = useState(null);
+    const [hasUploaded, setHasUploaded] = useState(false);
 
     const onDragOver = useCallback((e) => {
         e.preventDefault();
@@ -32,7 +32,7 @@ export function ReportProcessor() {
         );
 
         if (validFiles.length === 0) {
-            setError("Por favor sube archivos .xlsx o .csv válidos.");
+            toast.error("Por favor sube archivos .xlsx o .csv válidos.");
             return;
         }
 
@@ -41,7 +41,7 @@ export function ReportProcessor() {
         } else {
             setFiles(prev => [...prev, ...validFiles]);
         }
-        setError(null);
+        setHasUploaded(false);
     };
 
     const onDrop = useCallback((e) => {
@@ -58,13 +58,13 @@ export function ReportProcessor() {
 
     const removeFile = (index) => {
         setFiles(prev => prev.filter((_, i) => i !== index));
+        setHasUploaded(false);
     };
 
     const processFiles = async () => {
         if (files.length === 0) return;
 
         setIsProcessing(true);
-        setError(null);
         setResults([]);
 
         const formData = new FormData();
@@ -80,7 +80,7 @@ export function ReportProcessor() {
                 const data = await response.json();
                 setResults([data]);
             } catch (err) {
-                setError(err.message);
+                toast.error(err.message);
             } finally {
                 setIsProcessing(false);
             }
@@ -95,10 +95,10 @@ export function ReportProcessor() {
                 const data = await response.json();
                 setResults(data.results);
                 if (data.errors && data.errors.length > 0) {
-                    setError(`Se procesaron ${data.processed_count} archivos, pero hubo errores en ${data.errors.length}.`);
+                    toast.error(`Se procesaron ${data.processed_count} archivos, pero hubo errores en ${data.errors.length}.`);
                 }
             } catch (err) {
-                setError(err.message);
+                toast.error(err.message);
             } finally {
                 setIsProcessing(false);
             }
@@ -106,11 +106,9 @@ export function ReportProcessor() {
     };
 
     const uploadResultsToSupabase = async () => {
-        if (results.length === 0) return;
+        if (results.length === 0 || hasUploaded) return;
 
         setIsUploading(true);
-        setUploadMessage(null);
-        setError(null);
 
         try {
             const response = await fetch("/api/upload-results", {
@@ -122,13 +120,21 @@ export function ReportProcessor() {
             });
 
             const data = await response.json();
+
+            if (response.status === 409) {
+                toast.error(data.message || "Los archivos ya existen en la base de datos.");
+                setHasUploaded(true);
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error(data.detail || "No se pudo cargar la información en Supabase.");
             }
 
-            setUploadMessage(`Se cargaron ${data.inserted ?? results.length} registros en Supabase.`);
+            toast.success(data.message || `Se cargaron ${data.inserted} registros.`);
+            setHasUploaded(true);
         } catch (err) {
-            setError(err.message);
+            toast.error(err.message);
         } finally {
             setIsUploading(false);
         }
@@ -221,20 +227,6 @@ export function ReportProcessor() {
                     )}
                 </section>
 
-                {error && (
-                    <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl flex items-center gap-3 border border-red-100 dark:border-red-900/30">
-                        <span className="material-symbols-outlined">error</span>
-                        <span className="text-sm font-medium">{error}</span>
-                    </div>
-                )}
-
-                {uploadMessage && (
-                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-3 border border-emerald-100 dark:border-emerald-900/30">
-                        <span className="material-symbols-outlined">check_circle</span>
-                        <span className="text-sm font-medium">{uploadMessage}</span>
-                    </div>
-                )}
-
                 {/* Actions */}
                 <div className="flex justify-end gap-3">
                     {/* Boton para limpiar todo */}
@@ -283,6 +275,7 @@ export function ReportProcessor() {
                                 result={results[0]}
                                 onUpload={uploadResultsToSupabase}
                                 isUploading={isUploading}
+                                hasUploaded={hasUploaded}
                             />
                         ) : (
                             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
@@ -317,14 +310,14 @@ export function ReportProcessor() {
                                                 <td colSpan="5" className="px-6 py-4 text-center">
                                                     <button
                                                         onClick={uploadResultsToSupabase}
-                                                        disabled={results.length === 0 || isUploading}
-                                                        className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 mx-auto ${results.length === 0 || isUploading
+                                                        disabled={results.length === 0 || isUploading || hasUploaded}
+                                                        className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 mx-auto ${results.length === 0 || isUploading || hasUploaded
                                                             ? "bg-slate-400 cursor-not-allowed"
                                                             : "bg-primary hover:bg-primary/90 hover:scale-105 shadow-primary/20"
                                                             }`}
                                                     >
                                                         <span className="material-symbols-outlined text-lg ">cloud_upload</span>
-                                                        {isUploading ? "Cargando..." : "Cargar datos"}
+                                                        {isUploading ? "Cargando..." : hasUploaded ? "Cargado" : "Cargar datos"}
                                                     </button>
                                                 </td>
                                             </tr>
@@ -340,7 +333,7 @@ export function ReportProcessor() {
     );
 }
 
-function ResultCard({ result, onUpload, isUploading }) {
+function ResultCard({ result, onUpload, isUploading, hasUploaded }) {
     return (
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-bottom-4">
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100 dark:border-slate-700">
@@ -380,25 +373,25 @@ function ResultCard({ result, onUpload, isUploading }) {
                     Profesionales que Reciben
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {result["NOMBRE PROFESIONALES QUE RECIBEN"].split(" | ").map((prof, i) => (
+                    {result["NOMBRE PROFESIONALES QUE RECIBEN"]?.split(" | ").map((prof, i) => (
                         <span key={i} className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium dark:text-slate-300 shadow-sm">
                             {prof}
                         </span>
-                    ))}
+                    )) || <span className="text-slate-400 text-sm">No especificado</span>}
                 </div>
 
             </div>
             <div className="flex items-center justify-center p-4">
                 <button
                     onClick={onUpload}
-                    disabled={isUploading}
-                    className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 ${isUploading
+                    disabled={isUploading || hasUploaded}
+                    className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 ${isUploading || hasUploaded
                         ? "bg-slate-400 cursor-not-allowed"
                         : "bg-green-600 hover:bg-green-700 cursor-pointer hover:scale-105 shadow-primary/20"
                         }`}
                 >
                     <span className="material-symbols-outlined text-lg">cloud_upload</span>
-                    {isUploading ? "Cargando..." : "Cargar datos"}
+                    {isUploading ? "Cargando..." : hasUploaded ? "Cargado" : "Cargar datos"}
                 </button>
             </div>
         </div>
