@@ -13,8 +13,9 @@ export function Header() {
         <>
             <header className="p-4 text-gray-300 relative">
                 <nav className="z-50 flex items-center justify-between w-full py-4 px-6 md:px-16 lg:px-24 xl:px-32 backdrop-blur text-slate-800 text-sm">
-                    <Link to="/">
+                    <Link to="/" className="flex items-center gap-2">
                         <DataLabLogo />
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">DataLab</h2>
                     </Link>
 
                     {/* Desktop Menu */}

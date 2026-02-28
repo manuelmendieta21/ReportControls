@@ -40,7 +40,8 @@ export function DashboardLayout({ children, title = "Análisis de Datos" }) {
             `}>
                 <div className="p-6 flex-1">
                     <div className="flex items-center justify-between mb-10">
-                        <div className="flex items-center justify-center w-full gap-3 bg-white dark:bg-slate-900">
+                        <div className="flex items-center justify-center gap-3 rounded-r-full bg-white dark:bg-slate-900">
+                            <DataLabLogo />
                         </div>
                         {/* Close Button Mobile */}
                         <button className="lg:hidden p-1 hover:bg-slate-800 rounded-lg" onClick={toggleMobileMenu}>
