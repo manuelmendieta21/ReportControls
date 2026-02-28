@@ -1,0 +1,8 @@
+fastapi
+pd
+pandas
+openpyxl
+python-multipart
+uvicorn
+jinja2
+python-dotenv

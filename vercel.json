@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/index.py"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/frontend/reportlabf/dist/$1"
+        }
+    ],
+    "framework": "vite",
+    "installCommand": "cd frontend/reportlabf && npm install",
+    "buildCommand": "cd frontend/reportlabf && npm run build",
+    "outputDirectory": "frontend/reportlabf/dist"
+}
