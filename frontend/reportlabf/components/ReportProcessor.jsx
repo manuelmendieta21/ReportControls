@@ -13,6 +13,8 @@ export function ReportProcessor() {
 
     const [isDragging, setIsDragging] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadMessage, setUploadMessage] = useState(null);
 
     const onDragOver = useCallback((e) => {
         e.preventDefault();
@@ -100,6 +102,35 @@ export function ReportProcessor() {
             } finally {
                 setIsProcessing(false);
             }
+        }
+    };
+
+    const uploadResultsToSupabase = async () => {
+        if (results.length === 0) return;
+
+        setIsUploading(true);
+        setUploadMessage(null);
+        setError(null);
+
+        try {
+            const response = await fetch("/api/upload-results", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ results }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || "No se pudo cargar la información en Supabase.");
+            }
+
+            setUploadMessage(`Se cargaron ${data.inserted ?? results.length} registros en Supabase.`);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -197,6 +228,13 @@ export function ReportProcessor() {
                     </div>
                 )}
 
+                {uploadMessage && (
+                    <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-3 border border-emerald-100 dark:border-emerald-900/30">
+                        <span className="material-symbols-outlined">check_circle</span>
+                        <span className="text-sm font-medium">{uploadMessage}</span>
+                    </div>
+                )}
+
                 {/* Actions */}
                 <div className="flex justify-end gap-3">
                     {/* Boton para limpiar todo */}
@@ -226,7 +264,7 @@ export function ReportProcessor() {
                         ) : (
                             <>
                                 <span className="material-symbols-outlined">rocket_launch</span>
-                                {uploadMode === 'individual' ? "Procesar Archivo" : `Procesar ${files.length} Archivos`}
+                                {uploadMode === 'individual' ? "Cargar y Procesar" : `Cargar y Procesar ${files.length} Archivos`}
                             </>
                         )}
                     </button>
@@ -241,7 +279,11 @@ export function ReportProcessor() {
                         </div>
 
                         {uploadMode === 'individual' ? (
-                            <ResultCard result={results[0]} />
+                            <ResultCard
+                                result={results[0]}
+                                onUpload={uploadResultsToSupabase}
+                                isUploading={isUploading}
+                            />
                         ) : (
                             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
                                 <div className="overflow-x-auto">
@@ -271,12 +313,21 @@ export function ReportProcessor() {
                                                     </td>
                                                 </tr>
                                             ))}
-                                            <td className="px-6 py-4 text-center">
-                                                <button className="bg-primary hover:bg-primary/90 hover:scale-105 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                                                    <span className="material-symbols-outlined text-lg ">cloud_upload</span>
-                                                    Cargar datos
-                                                </button>
-                                            </td>
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-4 text-center">
+                                                    <button
+                                                        onClick={uploadResultsToSupabase}
+                                                        disabled={results.length === 0 || isUploading}
+                                                        className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 mx-auto ${results.length === 0 || isUploading
+                                                            ? "bg-slate-400 cursor-not-allowed"
+                                                            : "bg-primary hover:bg-primary/90 hover:scale-105 shadow-primary/20"
+                                                            }`}
+                                                    >
+                                                        <span className="material-symbols-outlined text-lg ">cloud_upload</span>
+                                                        {isUploading ? "Cargando..." : "Cargar datos"}
+                                                    </button>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -289,7 +340,7 @@ export function ReportProcessor() {
     );
 }
 
-function ResultCard({ result }) {
+function ResultCard({ result, onUpload, isUploading }) {
     return (
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-bottom-4">
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100 dark:border-slate-700">
@@ -338,9 +389,16 @@ function ResultCard({ result }) {
 
             </div>
             <div className="flex items-center justify-center p-4">
-                <button className="bg-green-600 hover:bg-green-700  cursor-pointer hover:scale-105  text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                <button
+                    onClick={onUpload}
+                    disabled={isUploading}
+                    className={`text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-2 ${isUploading
+                        ? "bg-slate-400 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700 cursor-pointer hover:scale-105 shadow-primary/20"
+                        }`}
+                >
                     <span className="material-symbols-outlined text-lg">cloud_upload</span>
-                    Cargar datos
+                    {isUploading ? "Cargando..." : "Cargar datos"}
                 </button>
             </div>
         </div>
