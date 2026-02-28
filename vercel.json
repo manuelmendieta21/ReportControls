@@ -6,12 +6,13 @@
             "destination": "/api/index.py"
         },
         {
-            "source": "/(.*)",
-            "destination": "/frontend/reportlabf/dist/$1"
+            "source": "/((?!api/).*)",
+            "destination": "/frontend/reportlabf/index.html"
         }
     ],
     "framework": "vite",
     "installCommand": "cd frontend/reportlabf && npm install",
     "buildCommand": "cd frontend/reportlabf && npm run build",
+    "devCommand": "cd frontend/reportlabf && npx vite --port $PORT",
     "outputDirectory": "frontend/reportlabf/dist"
 }
